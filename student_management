@@ -1,0 +1,125 @@
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+class Student implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String name;
+    private String rollNumber;
+    private String grade;
+
+    public Student(String name, String rollNumber, String grade) {
+        this.name = name;
+        this.rollNumber = rollNumber;
+        this.grade = grade;
+    }
+
+    public String toString() {
+        return "Name: " + name + ", Roll Number: " + rollNumber + ", Grade: " + grade;
+    }
+
+    public String getRollNumber() {
+        return rollNumber;
+    }
+}
+
+class StudentManagementSystem {
+    private Map<String, Student> students;
+
+    public StudentManagementSystem() {
+        this.students = new HashMap<>();
+    }
+
+    public void addStudent(Student student) {
+        students.put(student.getRollNumber(), student);
+    }
+
+    public void removeStudent(String rollNumber) {
+        students.remove(rollNumber);
+    }
+
+    public Student searchStudent(String rollNumber) {
+        return students.get(rollNumber);
+    }
+
+    public void displayAllStudents() {
+        for (Student student : students.values()) {
+            System.out.println(student);
+        }
+    }
+
+    public void saveToFile(String filename) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+            oos.writeObject(students);
+            System.out.println("Data saved to file successfully!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+public class student_management {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        StudentManagementSystem studentManagementSystem = new StudentManagementSystem();
+
+        while (true) {
+            System.out.println("\nStudent Management System");
+            System.out.println("1. Add Student");
+            System.out.println("2. Remove Student");
+            System.out.println("3. Search Student");
+            System.out.println("4. Display All Students");
+            System.out.println("5. Save to File");
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.print("Enter student name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter roll number: ");
+                    String rollNumber = scanner.nextLine();
+                    System.out.print("Enter grade: ");
+                    String grade = scanner.nextLine();
+                    Student newStudent = new Student(name, rollNumber, grade);
+                    studentManagementSystem.addStudent(newStudent);
+                    System.out.println("Student added successfully!");
+                    break;
+                case "2":
+                    System.out.print("Enter the roll number of the student to remove: ");
+                    String removeRollNumber = scanner.nextLine();
+                    studentManagementSystem.removeStudent(removeRollNumber);
+                    System.out.println("Student removed successfully!");
+                    break;
+                case "3":
+                    System.out.print("Enter the roll number of the student to search: ");
+                    String searchRollNumber = scanner.nextLine();
+                    Student foundStudent = studentManagementSystem.searchStudent(searchRollNumber);
+                    if (foundStudent != null) {
+                        System.out.println("Student found - " + foundStudent);
+                    } else {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+                case "4":
+                    studentManagementSystem.displayAllStudents();
+                    break;
+                case "5":
+                    System.out.print("Enter the filename to save data: ");
+                    String saveFilename = scanner.nextLine();
+                    studentManagementSystem.saveToFile(saveFilename + ".txt");
+                    break;
+                case "6":
+                    System.out.println("Exiting the application. Goodbye!");
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+                    break;
+            }
+        }
+    }
+}
